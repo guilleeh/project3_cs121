@@ -1,8 +1,8 @@
 import json
+from tokenizer import Tokenizer
 
 if __name__ == "__main__":
-    with open('./WEBPAGES_RAW/bookkeeping.json', 'r') as myfile:
-        data = json.load(myfile)
-
-    for k, v in data.items():
-        print(k, v)
+    tokens = Tokenizer()
+    tokens.read_data('./WEBPAGES_RAW/bookkeeping.json')
+    tokens.find_files()
+    tokens.print_all_tokens()
