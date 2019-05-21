@@ -23,8 +23,8 @@ class Tokenizer:
         i=0
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
-            self.get_tokens('./WEBPAGES_RAW/' + key) #maybe not working
-            if(i == 4):
+            self.create_tokens('./WEBPAGES_RAW/' + key) #maybe not working
+            if(i == 10):
                 break
             i+=1
             
@@ -33,20 +33,33 @@ class Tokenizer:
         for key, value in self.tokens.items():
             print(value)
             i += 1
-            if i == 5:
+            if i == 10:
                 break
 
-    def get_tokens(self, file):
+    def create_tokens(self, file):
         '''
         This function should return word tokens for a given file
         '''
         #http://nltk.org
         #https://pythonspot.com/tokenizing-words-and-sentences-with-nltk/ -has info on stop words and stemming
         
+        ps = nltk.PorterStemmer()
+
         with open(file, 'r') as myfile:
-            raw_text = BeautifulSoup(myfile, 'lxml').get_text()
-        self.tokens[file] = nltk.word_tokenize(raw_text) #maybe we need to open the file
-        # print(self.tokens[file])
+            soup = BeautifulSoup(myfile, 'lxml')
         
+        # kill all script and style elements
+        for script in soup(["script", "style"]): #Source: https://stackoverflow.com/questions/22799990/beatifulsoup4-get-text-still-has-javascript
+            script.decompose() #rip it out
+
+        raw_text = soup.get_text()
+
+        tokens = nltk.word_tokenize(raw_text) #maybe we need to open the file
+        
+        index = 0
+        for word in tokens:
+            tokens[index] = ps.stem(tokens[index])
+            index += 1
+        self.tokens[file] = tokens
         
         
