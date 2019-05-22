@@ -3,6 +3,7 @@ import nltk
 from bs4 import BeautifulSoup
 import lxml
 from posting import Posting
+from collections import defaultdict
 
 class Tokenizer:
     def __init__ (self):
@@ -25,16 +26,26 @@ class Tokenizer:
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
-            if(i == 90):
+            if(i == 300):
                 break
             i+=1
             
     def print_all_tokens(self):
         for k, v in self.tokens.items():    
             print(k)
-            for k2, v2 in v.items():
-                print(k2, v2.occurence)
+            for each in v:
+                print(each.file, each.frequency)
                 
+    def create_stemmed_word_count_dictionary(self, raw_tokens):
+        '''
+        Takes in raw text, returns defaultdict of stemmed words in text
+        '''
+        ps = nltk.PorterStemmer()
+        words_counted = defaultdict(int)
+        for word in raw_tokens:
+            stemmed_word = ps.stem(word)
+            words_counted[stemmed_word] += 1
+        return words_counted
 
     def create_tokens(self, root, path):
         '''
@@ -42,8 +53,6 @@ class Tokenizer:
         '''
         #http://nltk.org
         #https://pythonspot.com/tokenizing-words-and-sentences-with-nltk/ -has info on stop words and stemming
-        
-        ps = nltk.PorterStemmer()
 
         with open(root+path, 'r') as myfile:
             soup = BeautifulSoup(myfile, 'lxml')
@@ -56,17 +65,18 @@ class Tokenizer:
 
         raw_tokens = nltk.word_tokenize(raw_text) 
         
-        #Stemming of all the tokens gathered
-        for word in raw_tokens:
+        #Stemming of all the tokens gathered        
+        words_counter = self.create_stemmed_word_count_dictionary(raw_tokens)
+
+        for word, count in words_counter.items():
             posting = Posting(path)
-            stemmed_word = ps.stem(word) 
+            posting.set_frequency(count)
             if word not in self.tokens.keys():
-                self.tokens[stemmed_word] = { path: posting }
+                self.tokens[word] = [posting]
             else:
-                try:
-                    self.tokens[stemmed_word][path].update_occurence()
-                except KeyError:
-                    self.tokens[stemmed_word] = { path: posting }
+                self.tokens[word].append(posting)
+
+
 
 
         
