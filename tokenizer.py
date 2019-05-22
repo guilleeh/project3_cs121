@@ -2,6 +2,8 @@ import json
 import nltk
 from bs4 import BeautifulSoup
 import lxml
+from posting import Posting
+from collections import defaultdict
 
 class Tokenizer:
     def __init__ (self):
@@ -23,29 +25,36 @@ class Tokenizer:
         i=0
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
-            self.create_tokens('./WEBPAGES_RAW/' + key) #maybe not working
-            if(i == 10):
+            self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
+            if(i == 300):
                 break
             i+=1
             
     def print_all_tokens(self):
-        i = 0
-        for key, value in self.tokens.items():
-            print(value)
-            i += 1
-            if i == 10:
-                break
+        for k, v in self.tokens.items():    
+            print(k)
+            for each in v:
+                print(each.file, each.frequency)
+                
+    def create_stemmed_word_count_dictionary(self, raw_tokens):
+        '''
+        Takes in raw text, returns defaultdict of stemmed words in text
+        '''
+        ps = nltk.PorterStemmer()
+        words_counted = defaultdict(int)
+        for word in raw_tokens:
+            stemmed_word = ps.stem(word)
+            words_counted[stemmed_word] += 1
+        return words_counted
 
-    def create_tokens(self, file):
+    def create_tokens(self, root, path):
         '''
         This function should return word tokens for a given file
         '''
         #http://nltk.org
         #https://pythonspot.com/tokenizing-words-and-sentences-with-nltk/ -has info on stop words and stemming
-        
-        ps = nltk.PorterStemmer()
 
-        with open(file, 'r') as myfile:
+        with open(root+path, 'r') as myfile:
             soup = BeautifulSoup(myfile, 'lxml')
         
         # kill all script and style elements
@@ -54,12 +63,21 @@ class Tokenizer:
 
         raw_text = soup.get_text()
 
-        tokens = nltk.word_tokenize(raw_text) #maybe we need to open the file
+        raw_tokens = nltk.word_tokenize(raw_text) 
         
-        index = 0
-        for word in tokens:
-            tokens[index] = ps.stem(tokens[index])
-            index += 1
-        self.tokens[file] = tokens
+        #Stemming of all the tokens gathered        
+        words_counter = self.create_stemmed_word_count_dictionary(raw_tokens)
+
+        for word, count in words_counter.items():
+            posting = Posting(path)
+            posting.set_frequency(count)
+            if word not in self.tokens.keys():
+                self.tokens[word] = [posting]
+            else:
+                self.tokens[word].append(posting)
+
+
+
+
         
         
