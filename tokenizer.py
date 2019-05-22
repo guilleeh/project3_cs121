@@ -10,6 +10,7 @@ class Tokenizer:
         self.data = ''
         #This is where we should store all the tokens for all the files. Maybe use DICTIONARY
         self.tokens = {}
+        self.number_of_docs = 0
 
     def read_data(self, file):
         '''
@@ -22,18 +23,17 @@ class Tokenizer:
         '''
         will go through each file, and call get_tokens on each
         '''
-        i=0
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
-            if(i == 4):
+            if(self.number_of_docs == 4):
                 break
-            i+=1
+            self.number_of_docs += 1
             
     def print_all_tokens(self):
         for k, v in self.tokens.items():    
             print(k)
-            for each in v:
+            for each in v[1]:
                 print(each.file, each.frequency)
                 
     def create_stemmed_word_count_dictionary(self, raw_tokens):
@@ -71,11 +71,21 @@ class Tokenizer:
         for word, count in words_counter.items():
             posting = Posting(path)
             posting.set_frequency(count)
-            
+            posting.set_length_of_doc(len(raw_tokens))
             if word not in self.tokens.keys():
-                self.tokens[word] = [posting]
+                self.tokens[word] = (0, [posting])
             else:
-                self.tokens[word].append(posting)
+                self.tokens[word][1].append(posting)
+
+    def compute_tf_idf(self, tokens):
+        tf = 0
+        idf = 0
+        for k, v in tokens.items():
+            for each in v[0]:
+
+
+
+
 
 
 
