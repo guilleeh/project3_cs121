@@ -7,6 +7,7 @@ class Posting:
     def __init__ (self, file):
         self.file = file
         self.frequency = 1
+        self.occurence_indices = []
         #indices of occurance?
         self.tfidf = 0
 
@@ -27,6 +28,6 @@ class Posting:
         self.frequency = count
 
     
-    #dict: {word: {0/0:[posting]}}
+    #dict: {word: [posting]}
     
 

@@ -26,7 +26,7 @@ class Tokenizer:
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
-            if(i == 300):
+            if(i == 4):
                 break
             i+=1
             
@@ -71,6 +71,7 @@ class Tokenizer:
         for word, count in words_counter.items():
             posting = Posting(path)
             posting.set_frequency(count)
+            
             if word not in self.tokens.keys():
                 self.tokens[word] = [posting]
             else:
