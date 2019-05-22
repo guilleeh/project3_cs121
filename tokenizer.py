@@ -2,6 +2,7 @@ import json
 import nltk
 from bs4 import BeautifulSoup
 import lxml
+from posting import Posting
 
 class Tokenizer:
     def __init__ (self):
@@ -23,20 +24,19 @@ class Tokenizer:
         i=0
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
-            self.create_tokens('./WEBPAGES_RAW/' + key) #maybe not working
-            if(i == 10):
+            self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
+            if(i == 90):
                 break
             i+=1
             
     def print_all_tokens(self):
-        i = 0
-        for key, value in self.tokens.items():
-            print(value)
-            i += 1
-            if i == 10:
-                break
+        for k, v in self.tokens.items():    
+            print(k)
+            for k2, v2 in v.items():
+                print(k2, v2.occurence)
+                
 
-    def create_tokens(self, file):
+    def create_tokens(self, root, path):
         '''
         This function should return word tokens for a given file
         '''
@@ -45,7 +45,7 @@ class Tokenizer:
         
         ps = nltk.PorterStemmer()
 
-        with open(file, 'r') as myfile:
+        with open(root+path, 'r') as myfile:
             soup = BeautifulSoup(myfile, 'lxml')
         
         # kill all script and style elements
@@ -54,12 +54,20 @@ class Tokenizer:
 
         raw_text = soup.get_text()
 
-        tokens = nltk.word_tokenize(raw_text) #maybe we need to open the file
+        raw_tokens = nltk.word_tokenize(raw_text) 
         
-        index = 0
-        for word in tokens:
-            tokens[index] = ps.stem(tokens[index])
-            index += 1
-        self.tokens[file] = tokens
+        #Stemming of all the tokens gathered
+        for word in raw_tokens:
+            posting = Posting(path)
+            stemmed_word = ps.stem(word) 
+            if word not in self.tokens.keys():
+                self.tokens[stemmed_word] = { path: posting }
+            else:
+                try:
+                    self.tokens[stemmed_word][path].update_occurence()
+                except KeyError:
+                    self.tokens[stemmed_word] = { path: posting }
+
+
         
         
