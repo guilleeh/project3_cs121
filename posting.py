@@ -7,8 +7,10 @@ class Posting:
     def __init__ (self, file):
         self.file = file
         self.frequency = 1
+        self.occurence_indices = []
         #indices of occurance?
         self.tfidf = 0
+        self.length_of_doc = 0
 
 
     def return_file(self):
@@ -26,7 +28,10 @@ class Posting:
     def set_frequency(self, count):
         self.frequency = count
 
+    def set_length_of_doc(self, length):
+        self.length_of_doc = length
+
     
-    #dict: {word: {0/0:[posting]}}
+    #dict: {word: [posting]}
     
 
