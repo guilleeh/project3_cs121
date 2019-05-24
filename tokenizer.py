@@ -4,13 +4,14 @@ from bs4 import BeautifulSoup
 import lxml
 from posting import Posting
 from collections import defaultdict
+import math
 
 class Tokenizer:
     def __init__ (self):
         self.data = ''
         #This is where we should store all the tokens for all the files. Maybe use DICTIONARY
         self.tokens = {}
-        self.number_of_docs = 0
+        self.total_number_of_docs = 0
 
     def read_data(self, file):
         '''
@@ -26,15 +27,14 @@ class Tokenizer:
         for key, value in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', key) #maybe not working
-            if(self.number_of_docs == 4):
+            self.total_number_of_docs += 1
+            if(self.total_number_of_docs == 3):
                 break
-            self.number_of_docs += 1
             
     def print_all_tokens(self):
         for k, v in self.tokens.items():    
             print(k)
-            for each in v[1]:
-                print(each.file, each.frequency)
+            print(v[0].tfidf, v[0].length_of_doc, v[0].frequency)
                 
     def create_stemmed_word_count_dictionary(self, raw_tokens):
         '''
@@ -73,16 +73,18 @@ class Tokenizer:
             posting.set_frequency(count)
             posting.set_length_of_doc(len(raw_tokens))
             if word not in self.tokens.keys():
-                self.tokens[word] = (0, [posting])
+                self.tokens[word] = [posting]
             else:
-                self.tokens[word][1].append(posting)
+                self.tokens[word].append(posting)
 
-    def compute_tf_idf(self, tokens):
+    def compute_tf_idf(self):
         tf = 0
         idf = 0
-        for k, v in tokens.items():
-            for each in v[0]:
-
+        for k, v in self.tokens.items():
+            for posting in v:
+                tf = posting.frequency / posting.get_length_of_doc()
+                idf = math.log10(self.total_number_of_docs / len(v))
+                posting.set_tfidf(tf * idf)
 
 
 
