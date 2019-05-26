@@ -42,5 +42,45 @@
 }
 
 h1 {
+  font-size: 50px;
   text-align: center;
+}
+
+h1:hover {
+  color: #013C65;
+}
+
+
+h1::after {
+  display:block;
+  content: '';
+  border-bottom: solid 2px #013C65;
+  transform: scaleX(0);
+  transition: transform 250ms ease-in-out;
+}
+
+h1:hover::after {
+  transform: scaleX(.5);
+}
+
+.results {
+  position: absolute;
+  top: 33%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.pagination {
+  display: inline-block;
+  position: absolute;
+  top: 36%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
 }

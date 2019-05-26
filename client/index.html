@@ -6,19 +6,57 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
+
+    
     <title>Search Engine</title>
 </head>
 <body>
     
-    <section class="searchBox">
+    <div class="searchBox">
         <h1>UCI Search</h1>
         <form method="post">
             <div class="box">
-                <input class="searchTerm" type="text" placeholder="Enter a phrase">
-                <button type="submit" class="searchButton">Search </button>
+                <input class="searchTerm" id="term" type="text" placeholder="Enter a phrase">
+                <button type="submit" class="searchButton" onclick="return buttonClick()">Search </button>
+                
             </div>
         </form>
-    </section>
+    </div>
+
+    <div class="results">
+        <p id="test"></p>
+
+    </div>
+
+    <div class="pagination">
+            <a href="#">&laquo;</a>
+            <a href="#">1</a>
+            <a class="active" href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">6</a>
+            <a href="#">&raquo;</a>
+    </div>
+
+    
+
+
+    <script>
+        function buttonClick() {
+            searchDatabase();
+            return false;
+        }
+        function searchDatabase() {
+            document.getElementById("test").innerHTML = "You entered: " + document.getElementById("term").value;
+        }
+
+    </script>
+    
+
+    
+    
 </body>
+
 
 </html>
