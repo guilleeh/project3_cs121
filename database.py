@@ -8,8 +8,8 @@ class Database:
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.client["mydatabase"]
 
-        if "tokens" in self.db.collection_names():
-            self.db["tokens"].drop()
+        # if "tokens" in self.db.collection_names():
+        #     self.db["tokens"].drop()
 
         self.collection = self.db["tokens"]
 
@@ -25,8 +25,9 @@ class Database:
     def find(self, word):
         query = {"_id": word}
         result = self.collection.find(query)
-        for each in result:
-            print(each)
+        # for each in result:
+        #     print(each['postings'])
+        return result
 
     
 

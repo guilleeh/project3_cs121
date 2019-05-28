@@ -17,6 +17,9 @@ class Tokenizer:
         self.tokens_dict = {}
         self.database = database.Database()
 
+    def is_ascii(self, token):
+        return all(ord(c) < 128 for c in token)
+
     def read_data(self, file):
         '''
         reads data from a json file and saves it in self.data
@@ -32,7 +35,8 @@ class Tokenizer:
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', key, value) #maybe not working
             self.total_number_of_docs += 1
-            if(self.total_number_of_docs == 4):
+            print("Total: ", self.total_number_of_docs)
+            if(self.total_number_of_docs == 300):
                 break
             
     def find_single_file(self, file, url):
@@ -88,14 +92,16 @@ class Tokenizer:
         words_counter = self.create_stemmed_word_count_dictionary(filtered_tokens)
 
         for word, count in words_counter.items():
-            posting = Posting(path, url)
-            posting.set_frequency(count)
-            posting.set_length_of_doc(len(raw_tokens))
-            # posting.set_occurrence_indices(self.get_word_indices(raw_tokens, word))
-            if word not in self.tokens.keys():
-                self.tokens[word] = [posting]
-            else:
-                self.tokens[word].append(posting)
+            if(self.is_ascii(word)):
+                if len(word) < 1024: #Can't have large strings for db keys
+                    posting = Posting(path, url)
+                    posting.set_frequency(count)
+                    posting.set_length_of_doc(len(raw_tokens))
+                    # posting.set_occurrence_indices(self.get_word_indices(raw_tokens, word))
+                    if word not in self.tokens.keys():
+                        self.tokens[word] = [posting]
+                    else:
+                        self.tokens[word].append(posting)
 
     def compute_tf_idf(self):
         '''
@@ -117,6 +123,7 @@ class Tokenizer:
         '''
         convert_key = {"$": ascii("$"), "." : ascii(".")}
         for key, value in self.tokens.items():
+            print(key)
             if key == "$" or key == ".":
                 key = convert_key[key]
             new_key = {"_id": key}

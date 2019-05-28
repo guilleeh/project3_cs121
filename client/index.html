@@ -7,24 +7,29 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 
-    
+
     <title>Search Engine</title>
 </head>
 <body>
-    
+
     <div class="searchBox">
         <h1>UCI Search</h1>
         <form method="post">
             <div class="box">
                 <input class="searchTerm" id="term" type="text" placeholder="Enter a phrase">
                 <button type="submit" id = "searchButton" class="searchButton" onclick="return buttonClick()">Search </button>
-                
+
             </div>
         </form>
     </div>
 
     <div class="results">
         <p id="test"></p>
+        <div class="search-results">
+            <p id="json-response">
+
+            </p>
+        </div>
 
     </div>
 
@@ -43,14 +48,52 @@
 
     </div>
 
-    
+    <script>
+        function buttonClick() {
+            searchDatabase();
+            return false;
+        }
+        function searchDatabase() {
+            document.getElementById("test").innerHTML = "You entered: " + document.getElementById("term").value;
+            let searchQuery = document.getElementById("term").value;
+            displayResults(searchQuery);
+        }
 
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-    
+        function displayResults(query) {
+            console.log("HERE")
+            var request = new XMLHttpRequest();
+            request.open('GET', 'http://localhost:5000/search?search=' + query, true);
 
-    
-    
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    var data = JSON.parse(request.responseText);
+                    data = data[0];
+                    let content = document.getElementById('json-response')
+                    for(let i = 0; i < data.length; i++) {
+                        var para = document.createElement("P");
+                        var t = document.createTextNode("File: " + data[i].file + ", Score: " + data[i].tfidf + ", URL: " + data[i].url + ", Frequency: " + data[i].frequency + '\n');
+                        para.appendChild(t);
+                        content.appendChild(para);
+                    }
+                } else {
+
+                }
+            }
+
+            request.onerror = function (e) {
+                console.alert(e)
+            }
+
+
+            request.send();
+        }
+
+
+    </script>
+
+
+
+
 </body>
 
 
