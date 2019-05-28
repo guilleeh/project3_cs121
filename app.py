@@ -1,18 +1,20 @@
-from flask import Flask
-import pymongo
+from flask import Flask, request, jsonify
 import tokenizer
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-
-mydb = myclient["mydatabase"]
-mycol = mydb["tokens"]
-collist = mydb.list_collection_names()
-
-if "tokens" in collist:
-    print("DB Exists")
+import database
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+@app.route("/search", methods=['GET'])
+def search():
+    query = request.args.get('search')
+    db = database.Database()
+    result = db.find(query)
+    result = [each['postings'] for each in result]
+    json = jsonify(result)
+    print(json)
+    return json
+
+    
+
