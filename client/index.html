@@ -17,7 +17,7 @@
         <form method="post">
             <div class="box">
                 <input class="searchTerm" id="term" type="text" placeholder="Enter a phrase">
-                <button type="submit" class="searchButton" onclick="return buttonClick()">Search </button>
+                <button type="submit" id = "searchButton" class="searchButton" onclick="return buttonClick()">Search </button>
                 
             </div>
         </form>
@@ -39,19 +39,14 @@
             <a href="#">&raquo;</a>
     </div>
 
+    <div id='facts'>
+
+    </div>
+
     
 
-
-    <script>
-        function buttonClick() {
-            searchDatabase();
-            return false;
-        }
-        function searchDatabase() {
-            document.getElementById("test").innerHTML = "You entered: " + document.getElementById("term").value;
-        }
-
-    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
     
 
     
