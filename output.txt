@@ -1,0 +1,1 @@
+{'_id': "'.'", 'postings': [{'file': '0/10', 'frequency': 1, 'tfidf': 0.005102203316338664, 'total_words': 59, 'url': 'fano.ics.uci.edu/cites/Author/Murray-Sherk.html'}, {'file': '0/100', 'frequency': 3, 'tfidf': 0.012371095712218404, 'total_words': 73, 'url': 'fano.ics.uci.edu/cites/Document/Fully-dynamic-min-cut.html'}]}
