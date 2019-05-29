@@ -35,26 +35,34 @@ function displayResults(query) {
     }
 
     request.send();
-    // let json_data = {
-    //     "Document1": "text",
-    //     "Document2": "text2",
-    //     "Document3": "text3",
-    //     "Document4": "text4",
-    //     "Document5": "text5",
-    //     "Document6": "text6",
-    //     "Document7": "text7",
-    //     "Document8": "text8",
-    //     "Document9": "text9",
-    //     "Document0": "text10",
-    //   }
-    //   var list = document.getElementById('json-response');
-    //   for (var key in json_data) {
-    //     var entry = document.createElement('li');
-    //     entry.setAttribute('href', "http://facebook.com");
-        
-    //     entry.appendChild(document.createTextNode(key));
-    //     list.appendChild(entry);
-    //   }
+    let json_data = {
+        "Document1": "text",
+        "Document2": "text2",
+        "Document3": "text3",
+        "Document4": "text4",
+        "Document5": "text5",
+        "Document6": "text6",
+        "Document7": "text7",
+        "Document8": "text8",
+        "Document9": "text9",
+        "Document0": "text10",
+      }
+      var list = document.getElementById('json-response');
+      for (var key in json_data) {
+
+        var entry = document.createElement('li');
+
+
+        //entry.appendChild(document.createTextNode(key));
+        // var link = document.createElement('a');
+        // link.href = "#";
+        // link.innerText = "click";
+        // entry.appendChild(link);
+
+        entry.insertAdjacentHTML("beforeend",'<a href="#">'+key+'</a>')
+
+        list.appendChild(entry);
+      }
       
 }
 
