@@ -12,5 +12,4 @@ if __name__ == "__main__":
     time = end - start
     full_time = "Hours: " + str(time / 60 / 60) + ", Minutes:" + str(time / 60)
     print(tokens.database.total_documents())
-    tokens.database.show_all()
     print(full_time)

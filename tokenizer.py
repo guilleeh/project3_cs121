@@ -15,7 +15,6 @@ class Tokenizer:
     def __init__ (self):
         self.data = ''
         #This is where we should store all the tokens for all the files. Maybe use DICTIONARY
-        self.crawler = main.Crawl()
         self.tokens = {}
         self.total_number_of_docs = 0
         self.tokens_dict = {}
@@ -30,8 +29,6 @@ class Tokenizer:
         '''
         with open(file, 'r') as myfile:
             self.data = json.load(myfile)
-        #invert the dictionary to use the urls from crawler as keys
-        self.data = {v: k for k, v in self.data.items()}
 
     def print_all_tokens(self):
         for k, v in self.tokens.items(): 
@@ -49,8 +46,7 @@ class Tokenizer:
         '''
         will go through each file, and call get_tokens on each
         '''
-        for url in self.crawler.crawler.downloaded_urls:
-            path = self.data[url]
+        for path, url in self.data.items():
             # print('./WEBPAGES_RAW/' + key)
             self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
             self.total_number_of_docs += 1
