@@ -2,12 +2,15 @@
 .searchBox {
   font-family: 'Nunito Sans', sans-serif;
   width: 50%;
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* position: absolute; */
+  text-align: center;
+  /* top: 20%; */
+  margin: auto;
+  padding-top: 4rem;
+  /* transform: translate(-50%, -50%); */
 }
 .box {
+  text-align: center;
   width: 100%;
   position: relative;
   display: flex;
@@ -64,27 +67,49 @@ h1:hover::after {
 }
 
 .results {
-  position: absolute;
-  top: 33%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+  display: inline-block;
+  text-align: center;
+  margin: auto;
+  padding-top: 1rem;
+  width: 100%;
 }
 
 .pagination {
   display: inline-block;
-  position: absolute;
+  text-align: center;
+  margin: auto;
+  padding-top: 1rem;
+  width: 100%;
+  /* position: absolute;
   top: 36%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%); */
 }
 
 .pagination a {
   color: black;
-  float: left;
+  /* float: left; */
   padding: 8px 16px;
   text-decoration: none;
 }
 
 .results {
   top: 70%;
+}
+
+li {
+  display: inline-block;
+  font-family: 'Nunito Sans', sans-serif;
+  color: rgb(68, 68, 143);
+  padding: 10px;
+  width: 80%;
+  text-align: left;
+  border: 2px solid #013C65;
+  border-radius: 5px;
+  background: rgb(243, 241, 241);
+  margin: 2px;
+}
+
+li:hover {
+  background: rgb(175, 175, 175);
 }

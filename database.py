@@ -4,12 +4,14 @@ class Database:
     '''
     Database class to perform CRUD operations on MONGODB DB
     '''
-    def __init__(self):
+    def __init__(self, drop_db : bool):
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.client["mydatabase"]
 
-        # if "tokens" in self.db.collection_names():
-        #     self.db["tokens"].drop()
+        if(drop_db):
+            if "tokens" in self.db.collection_names():
+                print("Dropping DB")
+                self.db["tokens"].drop()
 
         self.collection = self.db["tokens"]
 

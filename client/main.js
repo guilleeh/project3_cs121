@@ -1,9 +1,10 @@
 function buttonClick() {
+    event.preventDefault()
     searchDatabase();
     return false;
 }
 function searchDatabase() {
-    document.getElementById("test").innerHTML = "You entered: " + document.getElementById("term").value;
+    // document.getElementById("test").innerHTML = "You entered: " + document.getElementById("term").value;
     let searchQuery = document.getElementById("term").value;
     displayResults(searchQuery);
 }
@@ -33,8 +34,28 @@ function displayResults(query) {
         console.alert(e)
     }
 
-
     request.send();
+    // let json_data = {
+    //     "Document1": "text",
+    //     "Document2": "text2",
+    //     "Document3": "text3",
+    //     "Document4": "text4",
+    //     "Document5": "text5",
+    //     "Document6": "text6",
+    //     "Document7": "text7",
+    //     "Document8": "text8",
+    //     "Document9": "text9",
+    //     "Document0": "text10",
+    //   }
+    //   var list = document.getElementById('json-response');
+    //   for (var key in json_data) {
+    //     var entry = document.createElement('li');
+    //     entry.setAttribute('href', "http://facebook.com");
+        
+    //     entry.appendChild(document.createTextNode(key));
+    //     list.appendChild(entry);
+    //   }
+      
 }
 
 /*  search up how to add ajax call to button  */

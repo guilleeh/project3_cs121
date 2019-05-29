@@ -15,7 +15,7 @@ class Tokenizer:
         self.tokens = {}
         self.total_number_of_docs = 0
         self.tokens_dict = {}
-        self.database = database.Database()
+        self.database = database.Database(True)
 
     def is_ascii(self, token):
         return all(ord(c) < 128 for c in token)
@@ -36,8 +36,8 @@ class Tokenizer:
             self.create_tokens('./WEBPAGES_RAW/', key, value) #maybe not working
             self.total_number_of_docs += 1
             print("Total: ", self.total_number_of_docs)
-            if(self.total_number_of_docs == 300):
-                break
+            # if(self.total_number_of_docs == 300):
+            #     break
             
     def find_single_file(self, file, url):
         self.create_tokens('./WEBPAGES_RAW/', file, url)

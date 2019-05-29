@@ -9,7 +9,7 @@ CORS(app)
 @app.route("/search", methods=['GET'])
 def search():
     query = request.args.get('search')
-    db = database.Database()
+    db = database.Database(False)
     result = db.find(query)
     result = [each['postings'] for each in result]
     json = jsonify(result)
