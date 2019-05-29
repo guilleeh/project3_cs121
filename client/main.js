@@ -59,7 +59,7 @@ function displayResults(query) {
         // link.innerText = "click";
         // entry.appendChild(link);
 
-        entry.insertAdjacentHTML("beforeend",'<a href="#">'+key+'</a>')
+        entry.insertAdjacentHTML("beforeend",'<a href="#">'+key+'</a>' + " Description");
 
         list.appendChild(entry);
       }
