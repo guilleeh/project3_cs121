@@ -6,12 +6,16 @@ from posting import Posting
 from collections import defaultdict
 import math
 import database
+from search import main
+from search.crawler import Crawler
+from search.frontier import Frontier
 
 class Tokenizer:
 
     def __init__ (self):
         self.data = ''
         #This is where we should store all the tokens for all the files. Maybe use DICTIONARY
+        self.crawler = main.Crawl()
         self.tokens = {}
         self.total_number_of_docs = 0
         self.tokens_dict = {}
@@ -26,22 +30,9 @@ class Tokenizer:
         '''
         with open(file, 'r') as myfile:
             self.data = json.load(myfile)
+        #invert the dictionary to use the urls from crawler as keys
+        self.data = {v: k for k, v in self.data.items()}
 
-    def find_files(self):
-        '''
-        will go through each file, and call get_tokens on each
-        '''
-        for key, value in self.data.items():
-            # print('./WEBPAGES_RAW/' + key)
-            self.create_tokens('./WEBPAGES_RAW/', key, value) #maybe not working
-            self.total_number_of_docs += 1
-            print("Total: ", self.total_number_of_docs)
-            # if(self.total_number_of_docs == 300):
-            #     break
-            
-    def find_single_file(self, file, url):
-        self.create_tokens('./WEBPAGES_RAW/', file, url)
-    
     def print_all_tokens(self):
         for k, v in self.tokens.items(): 
             print(k)
@@ -53,6 +44,22 @@ class Tokenizer:
     
     def print_number_of_tokens(self):
         print(self.total_number_of_docs)
+
+    def find_files(self):
+        '''
+        will go through each file, and call get_tokens on each
+        '''
+        for url in self.crawler.crawler.downloaded_urls:
+            path = self.data[url]
+            # print('./WEBPAGES_RAW/' + key)
+            self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
+            self.total_number_of_docs += 1
+            print("Total: ", self.total_number_of_docs)
+            # if(self.total_number_of_docs == 1):
+            #     break
+            
+    def find_single_file(self, file, url):
+        self.create_tokens('./WEBPAGES_RAW/', file, url)
                 
     def create_stemmed_word_count_dictionary(self, raw_tokens):
         '''
@@ -93,7 +100,7 @@ class Tokenizer:
 
         for word, count in words_counter.items():
             if(self.is_ascii(word)):
-                if len(word) < 1024: #Can't have large strings for db keys
+                if len(word) < 182: #Can't have large strings for db keys
                     posting = Posting(path, url)
                     posting.set_frequency(count)
                     posting.set_length_of_doc(len(raw_tokens))
@@ -103,47 +110,29 @@ class Tokenizer:
                     else:
                         self.tokens[word].append(posting)
 
-    def compute_tf_idf(self):
+    def compute_tf_idf_and_insert_db(self):
         '''
         Sets the tf_idf score for each document based on a word
         '''
         tf = 0
         idf = 0
-        for k, v in self.tokens.items():
-
-            for posting in v:
-                tf = posting.frequency / posting.get_length_of_doc()
-                idf = math.log10(self.total_number_of_docs / len(v))
-                posting.set_tfidf(tf * idf)
-
-    def get_tokens_and_postings_dict(self):
-        '''
-        converts dict of tokens and postings to a dictionary and 
-        adds it to db
-        '''
         convert_key = {"$": ascii("$"), "." : ascii(".")}
         for key, value in self.tokens.items():
-            print(key)
             if key == "$" or key == ".":
                 key = convert_key[key]
-            new_key = {"_id": key}
+            
+            new_entry = {"_id": key}
             posting_list = []
+            
             for posting in value:
+                tf = posting.frequency / posting.get_length_of_doc()
+                idf = math.log10(self.total_number_of_docs / len(value))
+                posting.set_tfidf(tf * idf)
                 posting_list.append(posting.posting_to_dictionary())
-            new_key["postings"] = posting_list
-            self.database.insert(new_key)
-
-    
-
-    def get_word_indices(self, raw_tokens, word):
-        indices = []
-        index = 0
-        print("Word indices: ", word)
-        for each in raw_tokens:
-            if each == word:
-                indices.append(index)
-            index += 1
-        return indices
+            
+            sorted_postings = sorted(posting_list, key = lambda i: i['tfidf'], reverse=True)
+            new_entry["postings"] = sorted_postings
+            self.database.insert(new_entry)    
 
 
 

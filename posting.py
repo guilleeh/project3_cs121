@@ -50,8 +50,7 @@ class Posting:
         self.occurence_indices = list_of_indices
 
     def posting_to_dictionary(self):
-        return {"file" : self.file, 
-                "frequency": self.frequency, 
+        return {"frequency": self.frequency, 
                 "tfidf" : self.tfidf, 
                 "total_words": self.length_of_doc, 
                 "url": self.url}

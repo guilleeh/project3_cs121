@@ -27,9 +27,11 @@ class Database:
     def find(self, word):
         query = {"_id": word}
         result = self.collection.find(query)
-        # for each in result:
-        #     print(each['postings'])
         return result
+    
+    def total_documents(self):
+        return self.collection.count()
+
 
     
 
