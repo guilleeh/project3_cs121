@@ -4,7 +4,7 @@ import database
 from flask_cors import CORS
 import nltk
 
-app = Flask(__name__, static_url_path='/client')
+app = Flask(__name__, static_folder="static")
 CORS(app)
 
 @app.route('/')
