@@ -6,6 +6,7 @@ from posting import Posting
 from collections import defaultdict
 import math
 import database
+import enchant
 
 class Tokenizer:
 
@@ -16,6 +17,15 @@ class Tokenizer:
         self.total_number_of_docs = 0
         self.tokens_dict = {}
         self.database = database.Database(True)
+
+    def is_number(self, n):
+        try:
+            float(n)   # Type-casting the string to `float`.
+                    # If string is not a valid `float`, 
+                    # it'll raise `ValueError` exception
+        except ValueError:
+            return False
+        return True
 
     def is_ascii(self, token):
         return all(ord(c) < 128 for c in token)
@@ -44,25 +54,29 @@ class Tokenizer:
         will go through each file, and call get_tokens on each
         '''
         for path, url in self.data.items():
-            # print('./WEBPAGES_RAW/' + key)
-            self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
-            self.total_number_of_docs += 1
-            print("Total: ", self.total_number_of_docs)
-            # if(self.total_number_of_docs == 1):
-            #     break
+            if( path != "39/373"):
+                self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
+                self.total_number_of_docs += 1
+            print("Total: ", self.total_number_of_docs, " URL: ", url)
+            if(self.total_number_of_docs == 6):
+                break
             
-    def find_single_file(self, file, url):
-        self.create_tokens('./WEBPAGES_RAW/', file, url)
+    def find_single_file(self, path, url):
+        if( path != "39/373"):
+            self.create_tokens('./WEBPAGES_RAW/', path, url)
                 
     def create_stemmed_word_count_dictionary(self, raw_tokens):
         '''
         Takes in raw text, returns defaultdict of stemmed words in text
         '''
-        s = nltk.stem.snowball.EnglishStemmer()
+        d = enchant.Dict("en_US")
+        s = nltk.PorterStemmer() 
         words_counted = defaultdict(int)
         for word in raw_tokens:
-            stemmed_word = s.stem(word.lower())
-            words_counted[stemmed_word] += 1
+            word = word.lower()
+            if(d.check(word)):
+                stemmed_word = s.stem(word)
+                words_counted[stemmed_word] += 1
         return words_counted
 
     def remove_stop_words(self, raw_tokens):
@@ -82,18 +96,26 @@ class Tokenizer:
         for script in soup(["script", "style"]): #Source: https://stackoverflow.com/questions/22799990/beatifulsoup4-get-text-still-has-javascript
             script.decompose() #rip it out
 
+        #Get title
+        for title in soup.find("title"):
+            print("PRINTING TITLE")
+            print(title)
+
         raw_text = soup.get_text()
+        print(raw_text)
 
         raw_tokens = nltk.word_tokenize(raw_text) 
+        print("Compute RAW TOKENS")
 
         filtered_tokens = self.remove_stop_words(raw_tokens)
-        
+        print("Compute filtered_tokens")
+
         #Stemming of all the tokens gathered        
         words_counter = self.create_stemmed_word_count_dictionary(filtered_tokens)
-
+        print("Compute word_dict")
         for word, count in words_counter.items():
-            if(self.is_ascii(word)):
-                if len(word) < 182 and len(word) > 1: #Can't have large strings for db keys
+            if(self.is_ascii(word) and (not self.is_number(word))):
+                if len(word) < 182 and len(word) > 2: #Can't have large strings for db keys
                     posting = Posting(path, url)
                     posting.set_frequency(count)
                     posting.set_length_of_doc(len(raw_tokens))
@@ -102,6 +124,8 @@ class Tokenizer:
                         self.tokens[word] = [posting]
                     else:
                         self.tokens[word].append(posting)
+        if path == "www.ics.uci.edu/faculty":
+            print(words_counter)
 
     def compute_tf_idf_and_insert_db(self):
         '''
@@ -110,6 +134,7 @@ class Tokenizer:
         tf = 0
         idf = 0
         convert_key = {"$": ascii("$"), "." : ascii(".")}
+        print("Computing TF-IDF")
         for key, value in self.tokens.items():
             if key == "$" or key == ".":
                 key = convert_key[key]
