@@ -6,9 +6,6 @@ from posting import Posting
 from collections import defaultdict
 import math
 import database
-from search import main
-from search.crawler import Crawler
-from search.frontier import Frontier
 
 class Tokenizer:
 
@@ -64,7 +61,7 @@ class Tokenizer:
         s = nltk.stem.snowball.EnglishStemmer()
         words_counted = defaultdict(int)
         for word in raw_tokens:
-            stemmed_word = s.stem(word)
+            stemmed_word = s.stem(word.lower())
             words_counted[stemmed_word] += 1
         return words_counted
 
@@ -96,7 +93,7 @@ class Tokenizer:
 
         for word, count in words_counter.items():
             if(self.is_ascii(word)):
-                if len(word) < 182: #Can't have large strings for db keys
+                if len(word) < 182 and len(word) > 1: #Can't have large strings for db keys
                     posting = Posting(path, url)
                     posting.set_frequency(count)
                     posting.set_length_of_doc(len(raw_tokens))
