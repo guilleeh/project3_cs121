@@ -4,7 +4,7 @@ class Posting:
     Class representing a posting.
 
     '''
-    def __init__ (self, file, url):
+    def __init__ (self, file, url, title):
         self.file = file
         self.url = url
         self.frequency = 1
@@ -15,11 +15,13 @@ class Posting:
         Go is located at index 0 and 2
         '''
         self.tfidf = 0 
+        self.similarity = 0
         '''
         LOW TFIDF == WORD DOES NOT HAVE MUCH SIGNIFICANCE
         HIGH TFIDF == WORD IS MORE SIGNIFICANT SINCE ITS A RARE WORD
         '''
         self.length_of_doc = 0
+        self.title = title
 
 
     def get_file(self):
@@ -53,6 +55,6 @@ class Posting:
         return {"frequency": self.frequency, 
                 "tfidf" : self.tfidf, 
                 "total_words": self.length_of_doc, 
-                "url": self.url}
+                "url": self.url, "title": self.title, "cosine": self.similarity}
     
 

@@ -11,19 +11,19 @@ function searchDatabase() {
 
 function template(data, pagination) {
     var html = '<ul>';
-    console.log(pagination.pageNumber)
     var count = (pagination.pageNumber-1) * pagination.pageSize;
     if (pagination.pageNumber ===1) {
         count = 1
     }
     $.each(data, function(index, item){
+        console.log(index)
         if (pagination.pageNumber ===1) {
-            html += '<li>' + `${count} <a href="${item}" target="_blank">${item}</a>` +'</li>';
+            html += `<li>${count}` + `<h4>${item.title}</h4><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
             count += 1;
             //gets current path instead of just url
         } else {
             count += 1
-            html += '<li>' + `${count} <a href="${item}" target="_blank">${item}</a>` +'</li>';
+            html += `<li>${count}` + `<h4>${item.title}</h4><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
         }
     });
     html += '</ul>';
@@ -31,16 +31,15 @@ function template(data, pagination) {
 }
 
 function displayResults(query) {
-    console.log("HERE")
     var request = new XMLHttpRequest();
     request.open('GET', 'http://localhost:5000/search?search=' + query, true);
 
     request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
             var data = JSON.parse(request.responseText);
-            data = data[0]
+            console.log(data)
             for(var i = 0; i < data.length; i++) {
-                data[i] = data[i].url;
+                data[i] = {"url": data[i].url, "title": data[i].title, "similarity": data[i].cosine};
                 console.log(data[i])
             }
             $('#pagination-container').pagination({

@@ -7,6 +7,8 @@ from collections import defaultdict
 import math
 import database
 import enchant
+import re
+from urllib.parse import urlparse
 
 class Tokenizer:
 
@@ -17,6 +19,49 @@ class Tokenizer:
         self.total_number_of_docs = 0
         self.tokens_dict = {}
         self.database = database.Database(True)
+
+    def is_valid(self, url):
+        """
+        Function returns True or False based on whether the url has to be fetched or not. This is a great place to
+        filter out crawler traps. Duplicated urls will be taken care of by frontier. You don't need to check for duplication
+        in this method
+        """
+        parsed = urlparse(url)
+
+        #Filter out any repeating directories
+        if re.match(r"^.*?(/.+?/).*?\1.*$|^.*?/(.+?/)\2.*$", url):
+            return False
+
+        #Filter out any urls with calendar
+        if re.match("^(calendar+)*(.+day|.+month|.+year|.+Date).*$", url):
+            return False
+
+
+        #Filter out any links that require you to log in
+        if re.match("^(.+)(sectok+)(.+)*$", url):
+            return False
+
+        # Filter out any links that have sidebyside in them
+        if re.match("^(.+)(sidebyside+)(.+)*$", url):
+            return False
+
+
+        try:
+            return ".ics.uci.edu" in parsed.hostname \
+                   and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
+                                    + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
+                                    + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
+                                    + "|thmx|mso|arff|rtf|jar|csv| " \
+                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
+
+        except TypeError:
+            print("TypeError for ", parsed)
+            return False
+
+    def cleanhtml(self, raw_html):
+        cleanr = re.compile('<.*?>')
+        cleantext = re.sub(cleanr, '', raw_html)
+        return cleantext
 
     def is_number(self, n):
         try:
@@ -54,12 +99,13 @@ class Tokenizer:
         will go through each file, and call get_tokens on each
         '''
         for path, url in self.data.items():
-            if( path != "39/373"):
-                self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
-                self.total_number_of_docs += 1
-            print("Total: ", self.total_number_of_docs, " URL: ", url)
-            if(self.total_number_of_docs == 6):
-                break
+            if self.is_valid("http://" + url):
+                if( path != "39/373"):
+                    self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
+                    self.total_number_of_docs += 1
+                print("Total: ", self.total_number_of_docs, " URL: ", url)
+                if(self.total_number_of_docs == 300):
+                    break
             
     def find_single_file(self, path, url):
         if( path != "39/373"):
@@ -97,12 +143,14 @@ class Tokenizer:
             script.decompose() #rip it out
 
         #Get title
-        for title in soup.find("title"):
+        try:
+            title = self.cleanhtml(str(soup.find_all("title")[0]))
             print("PRINTING TITLE")
             print(title)
+        except IndexError:
+            title = ""
 
         raw_text = soup.get_text()
-        print(raw_text)
 
         raw_tokens = nltk.word_tokenize(raw_text) 
         print("Compute RAW TOKENS")
@@ -116,10 +164,9 @@ class Tokenizer:
         for word, count in words_counter.items():
             if(self.is_ascii(word) and (not self.is_number(word))):
                 if len(word) < 182 and len(word) > 2: #Can't have large strings for db keys
-                    posting = Posting(path, url)
+                    posting = Posting(path, url, title)
                     posting.set_frequency(count)
                     posting.set_length_of_doc(len(raw_tokens))
-                    # posting.set_occurrence_indices(self.get_word_indices(raw_tokens, word))
                     if word not in self.tokens.keys():
                         self.tokens[word] = [posting]
                     else:
@@ -142,10 +189,14 @@ class Tokenizer:
             new_entry = {"_id": key}
             posting_list = []
             
+            print("WORD", key)
             for posting in value:
+                print("INSIDE POSTINGS")
                 tf = posting.frequency / posting.get_length_of_doc()
-                idf = math.log10(self.total_number_of_docs / len(value))
+                print("WORD: ", key, self.total_number_of_docs, "/", len(value))
+                idf = 1 + math.log10(self.total_number_of_docs / len(value))
                 posting.set_tfidf(tf * idf)
+                print("WORD: ", key, posting.posting_to_dictionary())
                 posting_list.append(posting.posting_to_dictionary())
             
             sorted_postings = sorted(posting_list, key = lambda i: i['tfidf'], reverse=True)
