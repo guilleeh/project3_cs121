@@ -18,12 +18,12 @@ function template(data, pagination) {
     $.each(data, function(index, item){
         console.log(index)
         if (pagination.pageNumber ===1) {
-            html += `<li>${count}` + `<h4>${item.title}</h4><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
+            html += `<li>` + `<h3>${count} - ${item.title}</h3><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
             count += 1;
             //gets current path instead of just url
         } else {
             count += 1
-            html += `<li>${count}` + `<h4>${item.title}</h4><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
+            html += `<li>` + `<h3>${count} - ${item.title}</h3><a href="${item.url}" target="_blank">${item.url}</a>` +'</li>';
         }
     });
     html += '</ul>';

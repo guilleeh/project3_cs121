@@ -66,6 +66,9 @@ h1::after {
 h1:hover::after {
   transform: scaleX(.5);
 }
+li h3 {
+  text-align: left;
+}
 
 h4 {
   text-align: center;

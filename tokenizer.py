@@ -99,13 +99,11 @@ class Tokenizer:
         will go through each file, and call get_tokens on each
         '''
         for path, url in self.data.items():
-            if self.is_valid("http://" + url):
+            if(self.is_valid(url)):
                 if( path != "39/373"):
                     self.create_tokens('./WEBPAGES_RAW/', path, url) #maybe not working
                     self.total_number_of_docs += 1
                 print("Total: ", self.total_number_of_docs, " URL: ", url)
-                if(self.total_number_of_docs == 300):
-                    break
             
     def find_single_file(self, path, url):
         if( path != "39/373"):
@@ -115,14 +113,12 @@ class Tokenizer:
         '''
         Takes in raw text, returns defaultdict of stemmed words in text
         '''
-        d = enchant.Dict("en_US")
         s = nltk.PorterStemmer() 
         words_counted = defaultdict(int)
         for word in raw_tokens:
             word = word.lower()
-            if(d.check(word)):
-                stemmed_word = s.stem(word)
-                words_counted[stemmed_word] += 1
+            stemmed_word = s.stem(word)
+            words_counted[stemmed_word] += 1
         return words_counted
 
     def remove_stop_words(self, raw_tokens):

@@ -10,9 +10,8 @@ app = Flask(__name__, static_folder="static")
 CORS(app)
 db = database.Database(False)
 
-@app.route('/')
-def root():
-    return app.send_static_file('index.html')
+
+
 
 def process_query(query : str):
     query_split = query.split()
@@ -20,6 +19,7 @@ def process_query(query : str):
     s = nltk.PorterStemmer()
     for word in query_split:
         new_queries.append(s.stem(word.lower()))
+    print(new_queries)
     return new_queries
 
 def get_tf_of_query(query : str):
@@ -40,6 +40,12 @@ def get_cosine_similarity(tfidf_query, tf_idf_doc):
     cosine_similarity = dot_product / query * doc
     return cosine_similarity
 
+
+
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
 @app.route("/search", methods=['GET'])
 def search():
     query = request.args.get('search')
@@ -55,7 +61,10 @@ def search():
                 posting["cosine"] = get_cosine_similarity(query_tf[each["_id"]], posting["tfidf"])
                 # print(posting)
                 json_ready_results.append(posting)
-    sorted(json_ready_results, key = lambda i: i["cosine"])
+    print("BEFORE: ", len(json_ready_results))
+    json_ready_results = list({v['url']:v for v in json_ready_results}.values())
+    print("AFTER: ", len(json_ready_results))
+    sorted(json_ready_results, key = lambda i: i["cosine"], reverse=True)
     json = jsonify(json_ready_results)
     print(json)
     return json
