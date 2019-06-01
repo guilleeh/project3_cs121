@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://localhost:5000/static/style.css">
+
+
+    <title>Search Engine</title>
+</head>
+<body>
+
+
+    <div class="searchBox">
+        <h1>UCI Search</h1>
+        <form method="post">
+            <div class="box">
+                <input class="searchTerm" id="term" type="text" placeholder="Enter a phrase">
+                <button type="submit" id = "searchButton" class="searchButton" onclick="return buttonClick()">Search </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="results">
+        <div id="pagination-container"></div>
+        <div id="data-container"></div>
+    </div>
+
+    
+
+    <div id='facts'>
+
+    </div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://localhost:5000/static/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="http://localhost:5000/static/lib/pagination.js"></script>
+    <!-- http://localhost:5000 -->
+
+
+
+
+</body>
+
+
+</html>
